@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Test – 60 Questions</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f2f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header / Timer */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: #ffffff;
+            border-bottom: 1px solid #e6edf4;
+            flex-shrink: 0;
+        }
+
+        .timer {
+            background: #1e293b;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.2rem;
+        }
+
+        /* Main layout: left question, right palette */
+        .main-panel {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Left: question area */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 28px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .q-number {
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .q-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #0f172a;
+            margin-bottom: 28px;
+            background: #f8fafc;
+            padding: 18px 22px;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px 22px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #1e293b;
+        }
+
+        .option-item.selected {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .option-prefix {
+            font-weight: 700;
+            color: #64748b;
+            min-width: 26px;
+        }
+
+        .option-item.selected .option-prefix {
+            color: #1d4ed8;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid #eef2f6;
+        }
+
+        .btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 12px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .btn:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            border-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Right palette (scrollable independently) */
+        .palette {
+            width: 300px;
+            background: #f9fcff;
+            border-left: 1px solid #e2e8f0;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .palette h3 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #475569;
+            margin-bottom: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .palette-btn {
+            aspect-ratio: 1 / 1;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #eef2f6;
+            color: #475569;
+            transition: all 0.1s ease;
+            border: 2px solid transparent;
+        }
+
+        .palette-btn.answered {
+            background: #10b981;
+            color: white;
+        }
+
+        .palette-btn.marked {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .palette-btn.not-visited {
+            background: #eef2f6;
+            color: #94a3b8;
+        }
+
+        .palette-btn.current {
+            border: 2px solid #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        /* legend */
+        .legend {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #334155;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+        }
+
+        .legend-color.answered {
+            background: #10b981;
+        }
+
+        .legend-color.marked {
+            background: #f59e0b;
+        }
+
+        .legend-color.not-visited {
+            background: #eef2f6;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* Overlay for results */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .overlay.show {
+            display: flex;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 28px;
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .result-header {
+            padding: 24px 28px;
+            background: #1e293b;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .result-header h2 {
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .score-summary {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .result-body {
+            padding: 20px 28px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .review-item {
+            border-radius: 16px;
+            padding: 16px 20px;
+            border-left: 6px solid;
+            background: #f8fafc;
+        }
+
+        .review-item.correct {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .review-item.skipped {
+            border-left-color: #94a3b8;
+            background: #f1f5f9;
+        }
+
+        .review-q {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .review-detail {
+            font-size: 0.9rem;
+            color: #334155;
+            margin-top: 4px;
+        }
+
+        .review-detail strong {
+            color: #0f172a;
+        }
+
+        .download-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* small scrollbar */
+        .palette::-webkit-scrollbar,
+        .question-area::-webkit-scrollbar,
+        .result-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .palette::-webkit-scrollbar-thumb,
+        .question-area::-webkit-scrollbar-thumb,
+        .result-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container" id="appContainer">
+    <!-- Top bar -->
+    <div class="top-bar">
+        <div class="title">📘 MCQ Test – 60 Questions</div>
+        <div class="timer" id="timerDisplay">50:00</div>
+    </div>
+
+    <!-- Main panel -->
+    <div class="main-panel" id="mainPanel">
+        <!-- Left question area -->
+        <div class="question-area" id="questionArea">
+            <div class="q-number" id="qNumber">Question 1 of 60</div>
+            <div class="q-text" id="qText"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="action-buttons">
+                <button class="btn" id="prevBtn">Previous</button>
+                <button class="btn" id="nextBtn">Next</button>
+                <button class="btn" id="clearBtn">Clear Response</button>
+                <button class="btn btn-warning" id="markBtn">Mark for Review</button>
+                <button class="btn btn-danger" id="submitBtn">Submit</button>
+            </div>
+        </div>
+
+        <!-- Right palette -->
+        <div class="palette" id="paletteContainer">
+            <h3>Question Palette</h3>
+            <div class="palette-grid" id="paletteGrid"></div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-color answered"></span> Answered</div>
+                <div class="legend-item"><span class="legend-color marked"></span> Marked for Review</div>
+                <div class="legend-item"><span class="legend-color not-visited"></span> Not Visited / Unanswered</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Overlay -->
+    <div class="overlay" id="overlay">
+        <div class="result-card">
+            <div class="result-header">
+                <h2>📊 Performance & Solutions</h2>
+                <div class="score-summary" id="scoreSummary"></div>
+                <div style="display:flex; gap:12px;">
+                    <button class="download-btn" id="downloadBtn">⬇ Download Review</button>
+                    <button class="close-btn" id="closeOverlayBtn">✕ Close</button>
+                </div>
+            </div>
+            <div class="result-body" id="resultBody">
+                <div class="filter-bar" id="filterBar">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="correct">Correct</button>
+                    <button class="filter-btn" data-filter="incorrect">Incorrect</button>
+                    <button class="filter-btn" data-filter="skipped">Unattempted</button>
+                </div>
+                <div class="review-list" id="reviewList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------------------- QUESTION BANK (60 questions) ----------------------
+        // Using exactly the 60 questions derived from the provided text (no changes)
+        const questions = [
+            // 1-14 from first file
+            { text: "Abate (Verb) - What does 'abate' mean?", options: ["To increase in intensity", "To become less intense, severe, or widespread", "To formally give up a throne", "To wash oneself for religious purification"], correct: 1 },
+            { text: "Abattoir (Noun) - What is an abattoir?", options: ["A place where animals are cared for", "A monastery for monks", "A slaughterhouse where animals are killed for food", "A shortened form of a word"], correct: 2 },
+            { text: "Abbot (Noun) - Who is an abbot?", options: ["The head of a monastery", "A partner in crime", "A person who keeps financial records", "A native inhabitant of a land"], correct: 0 },
+            { text: "Abbreviation (Noun) - What is an abbreviation?", options: ["A shortened form of a word or phrase", "A departure from what is normal", "A formal release from guilt", "To cancel a law officially"], correct: 0 },
+            { text: "Abdicate (Verb) - What does 'abdicate' mean?", options: ["To formally give up a throne, high office, or major responsibility", "To shorten a text without losing its sense", "To leave hurriedly and secretly", "To become less intense"], correct: 0 },
+            { text: "Aberration (Noun) - What is an aberration?", options: ["A departure from what is normal, usual, or expected", "The act of washing oneself as a religious ritual", "An award or expression of praise", "The scientific study of sound"], correct: 0 },
+            { text: "Ablution (Noun) - What is ablution?", options: ["The act of washing oneself, especially for religious purification", "To renounce or deny oneself something", "A person who helps another commit a crime", "To begin to move more quickly"], correct: 0 },
+            { text: "Abnegate (Verb) - What does 'abnegate' mean?", options: ["To renounce, reject, or deny oneself something desired", "To formally put an end to a system", "To shorten a book or text", "To repeal or cancel a law"], correct: 0 },
+            { text: "Abolish (Verb) - What does 'abolish' mean?", options: ["To formally put an end to a system, practice, or institution", "To become less intense", "To leave secretly to avoid arrest", "To give up a throne"], correct: 0 },
+            { text: "Aboriginal (Adjective) - What does 'aboriginal' mean?", options: ["Inhabiting a land from the earliest times; indigenous", "A shortened form of a word", "To cancel a law officially", "A place where animals are slaughtered"], correct: 0 },
+            { text: "Abridge (Verb) - What does 'to abridge' mean?", options: ["To shorten a book, film, speech, or text without losing its main sense", "To formally give up a throne", "To wash oneself for religious purification", "To become less intense"], correct: 0 },
+            { text: "Abrogate (Verb) - What does 'abrogate' mean?", options: ["To repeal, cancel, or do away with a law, right, or formal agreement officially", "To leave hurriedly and secretly", "To renounce or deny oneself something", "To formally put an end to a system"], correct: 0 },
+            { text: "Abscond (Verb) - What does 'abscond' mean?", options: ["To leave hurriedly and secretly, typically to avoid detection, arrest, or legal punishment", "To formally release from guilt", "To shorten a text", "To increase in speed"], correct: 0 },
+            { text: "Absolution (Noun) - What is absolution?", options: ["Formal release from guilt, obligation, or punishment; forgiveness of sins", "A departure from what is normal", "The act of washing oneself", "An award or honor"], correct: 0 },
+            // 15-22 from second file
+            { text: "Absurd (Adjective) - What does 'absurd' mean?", options: ["Widely unreasonable and illogical", "Sharp and bitter in temper or tone", "The scientific study of sound", "A person who keeps financial records"], correct: 0 },
+            { text: "Accelerate (Verb) - What does 'accelerate' mean?", options: ["To begin to move more quickly; to increase in speed, rate, or progress", "To formally put an end to a system", "To shorten a text", "To leave secretly"], correct: 0 },
+            { text: "Accolade (Noun) - What is an accolade?", options: ["An award, privilege, or expression of praise granted as a special honor", "A person who helps another commit a crime", "A deviation from the normal path", "The act of washing oneself"], correct: 0 },
+            { text: "Accomplish (Verb) vs. Accomplice (Noun) - What is the difference?", options: ["Accomplish means to achieve a goal; Accomplice means a partner in crime", "Accomplish means a partner in crime; Accomplice means to achieve a goal", "Both mean to achieve a goal", "Both mean a partner in crime"], correct: 0 },
+            { text: "Accord (Verb / Noun) - What are the two meanings of 'accord'?", options: ["To give or grant power/respect; to be harmonious or consistent with", "To formally give up a throne; to wash oneself", "To shorten a text; to cancel a law", "To leave secretly; to increase in speed"], correct: 0 },
+            { text: "Accountant (Noun) - What does an accountant do?", options: ["Keeps, inspects, audits, and analyzes financial records, budgets, and tax accounts", "Leads a monastery", "Studies sound", "Formally ends a system"], correct: 0 },
+            { text: "Acerbic (Adjective) - What does 'acerbic' mean?", options: ["Sharp, harsh, and forthright in tone, temper, or speech", "Widely unreasonable and illogical", "Inhabiting a land from earliest times", "To become less intense"], correct: 0 },
+            { text: "Acoustics (Noun) - What is acoustics?", options: ["The branch of physics concerned with sound and its properties", "The study of light", "The act of washing for religious purification", "A place where animals are slaughtered"], correct: 0 },
+            // 23-41 from match/fill (one-word substitutions)
+            { text: "One-word substitution: A place where animals are slaughtered for food", options: ["Abattoir", "Abbot", "Ablution", "Acerbic"], correct: 0 },
+            { text: "One-word substitution: The superior of a monastery", options: ["Abbot", "Abattoir", "Aborigine", "Accomplice"], correct: 0 },
+            { text: "One-word substitution: A shortened form of a word or phrase", options: ["Abbreviation", "Abdication", "Abridgement", "Aberration"], correct: 0 },
+            { text: "One-word substitution: To give up one's throne or authority", options: ["Abdicate", "Abnegate", "Abrogate", "Abscond"], correct: 0 },
+            { text: "One-word substitution: A deviation from the normal or expected path", options: ["Aberration", "Ablution", "Absolution", "Accolade"], correct: 0 },
+            { text: "One-word substitution: The act of washing oneself as a religious ritual", options: ["Ablution", "Absolution", "Abnegation", "Abridgement"], correct: 0 },
+            { text: "One-word substitution: To refuse and deny oneself something harmful", options: ["Abnegate", "Abdicate", "Abrogate", "Abridge"], correct: 0 },
+            { text: "One-word substitution: To formally put an end to a system or practice", options: ["Abolish", "Abrogate", "Abscond", "Abate"], correct: 0 },
+            { text: "One-word substitution: A native inhabitant of a land", options: ["Aborigine", "Abbot", "Accomplice", "Accountant"], correct: 0 },
+            { text: "One-word substitution: To shorten a piece of writing without losing its sense", options: ["Abridge", "Abrogate", "Abdicate", "Abnegate"], correct: 0 },
+            { text: "One-word substitution: To cancel or do away with a law officially", options: ["Abrogate", "Abridge", "Abolish", "Abscond"], correct: 0 },
+            { text: "One-word substitution: To leave suddenly and secretly to escape", options: ["Abscond", "Abdicate", "Abnegate", "Abate"], correct: 0 },
+            { text: "One-word substitution: Formal forgiveness of sins", options: ["Absolution", "Ablution", "Aberration", "Accolade"], correct: 0 },
+            { text: "One-word substitution: Widely unreasonable and illogical", options: ["Absurd", "Acerbic", "Accord", "Acoustic"], correct: 0 },
+            { text: "One-word substitution: An award, honor, or praise", options: ["Accolade", "Accomplice", "Accountant", "Aberration"], correct: 0 },
+            { text: "One-word substitution: A person who helps another commit a crime", options: ["Accomplice", "Accountant", "Abbot", "Aborigine"], correct: 0 },
+            { text: "One-word substitution: A person who keeps financial records", options: ["Accountant", "Accomplice", "Abbot", "Acolyte"], correct: 0 },
+            { text: "One-word substitution: Sharp and bitter in temper or tone", options: ["Acerbic", "Absurd", "Acoustic", "Accord"], correct: 0 },
+            { text: "One-word substitution: The scientific study of sound", options: ["Acoustics", "Optics", "Acerbic", "Accountancy"], correct: 0 },
+            // 42-60: Fill in the blanks / True-False converted to MCQs (ensuring 60 total)
+            { text: "Fill in the blank: She eats less to _____ her weight.", options: ["abate", "accelerate", "abolish", "abridge"], correct: 0 },
+            { text: "Fill in the blank: The cattle were sent to the _____.", options: ["abattoir", "abbot", "ablution", "accolade"], correct: 0 },
+            { text: "Fill in the blank: The _____ led the morning prayer at the monastery.", options: ["abbot", "abattoir", "aborigine", "accountant"], correct: 0 },
+            { text: "Fill in the blank: The abbreviation for 'Doctor' is _____.", options: ["Dr.", "Dtr.", "Doc.", "D."], correct: 0 },
+            { text: "Fill in the blank: The king decided to _____ the throne.", options: ["abdicate", "abnegate", "abrogate", "abscond"], correct: 0 },
+            { text: "Fill in the blank: The queen's _____ shocked the entire kingdom.", options: ["abdication", "aberration", "abridgement", "absolution"], correct: 0 },
+            { text: "Fill in the blank: Due to a strange mental _____, he forgot his own name.", options: ["aberration", "ablution", "abnegation", "accolade"], correct: 0 },
+            { text: "Fill in the blank: She performed her morning _____ before prayer.", options: ["ablution", "absolution", "abridgement", "abrogation"], correct: 0 },
+            { text: "Fill in the blank: She decided to _____ smoking.", options: ["abnegate", "abdicate", "abrogate", "abridge"], correct: 0 },
+            { text: "Fill in the blank: The practice of Sati was _____ in 1829.", options: ["abolished", "abridged", "abrogated", "absconded"], correct: 0 },
+            { text: "Fill in the blank: They studied the _____ culture of the region.", options: ["aboriginal", "abnormal", "abhorrent", "abundant"], correct: 0 },
+            { text: "Fill in the blank: The _____ of Australia have a rich history.", options: ["Aborigines", "Abbots", "Accomplices", "Accountants"], correct: 0 },
+            { text: "Fill in the blank: The _____ of the book was more accessible.", options: ["abridgement", "abattoir", "abdication", "abnegation"], correct: 0 },
+            { text: "Fill in the blank: The government _____ Article 370.", options: ["abrogated", "abridged", "abolished", "absconded"], correct: 0 },
+            { text: "Fill in the blank: The thief tried to _____ with the money.", options: ["abscond", "abdicate", "abnegate", "abate"], correct: 0 },
+            { text: "Fill in the blank: He sought _____ for his sins.", options: ["absolution", "ablution", "aberration", "abridgement"], correct: 0 },
+            { text: "Fill in the blank: The idea of flying cars seems _____.", options: ["absurd", "acerbic", "acoustic", "accordant"], correct: 0 },
+            { text: "Fill in the blank: The car began to _____ on the highway.", options: ["accelerate", "abate", "abolish", "abridge"], correct: 0 },
+            { text: "Fill in the blank: She received an _____ for her outstanding performance.", options: ["accolade", "accomplice", "accountant", "aberration"], correct: 0 }
+        ];
+
+        // Ensure we have exactly 60 questions (pad if needed? already 60)
+        // But we must verify count. Let's ensure no accidental missing.
+        // We'll log for safety.
+        console.log('Total questions:', questions.length);
+        if (questions.length !== 60) {
+            // In case of any mismatch, we'll pad with a placeholder (but we know it's 60)
+            while (questions.length < 60) {
+                questions.push({ text: "Placeholder question", options: ["A","B","C","D"], correct: 0 });
+            }
+        }
+
+        // ---------------------- STATE ----------------------
+        const state = {
+            currentIndex: 0,
+            userAnswers: new Array(60).fill(null),   // selected option index or null
+            marked: new Array(60).fill(false),       // marked for review
+            visited: new Array(60).fill(false),      // visited flag
+            timerInterval: null,
+            timeLeft: 3000, // 50 minutes in seconds = 3000
+            submitted: false,
+            filteredView: 'all' // all, correct, incorrect, skipped
+        };
+
+        // Mark first question visited
+        state.visited[0] = true;
+
+        // DOM elements
+        const qNumberEl = document.getElementById('qNumber');
+        const qTextEl = document.getElementById('qText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const paletteGrid = document.getElementById('paletteGrid');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const markBtn = document.getElementById('markBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const overlay = document.getElementById('overlay');
+        const closeOverlayBtn = document.getElementById('closeOverlayBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const scoreSummary = document.getElementById('scoreSummary');
+        const reviewList = document.getElementById('reviewList');
+        const filterBar = document.getElementById('filterBar');
+
+        // ---------------------- RENDER FUNCTIONS ----------------------
+        function renderQuestion(index) {
+            if (state.submitted) return;
+            const q = questions[index];
+            qNumberEl.textContent = `Question ${index + 1} of 60`;
+            qTextEl.textContent = q.text;
+
+            // Options
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, optIdx) => {
+                const div = document.createElement('div');
+                div.className = `option-item ${state.userAnswers[index] === optIdx ? 'selected' : ''}`;
+                div.innerHTML = `<span class="option-prefix">${String.fromCharCode(65 + optIdx)}.</span> ${opt}`;
+                div.addEventListener('click', () => toggleOption(index, optIdx));
+                optionsContainer.appendChild(div);
+            });
+
+            // Mark button text
+            markBtn.textContent = state.marked[index] ? 'Unmark Review' : 'Mark for Review';
+
+            // Update palette highlight
+            updatePalette();
+            // Enable/disable prev/next
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === 59;
+        }
+
+        function toggleOption(qIdx, optIdx) {
+            if (state.submitted) return;
+            // If clicking same option -> deselect, else select
+            if (state.userAnswers[qIdx] === optIdx) {
+                state.userAnswers[qIdx] = null;
+            } else {
+                state.userAnswers[qIdx] = optIdx;
+            }
+            // Mark as visited (if not already)
+            state.visited[qIdx] = true;
+            renderQuestion(qIdx);
+        }
+
+        function updatePalette() {
+            paletteGrid.innerHTML = '';
+            for (let i = 0; i < 60; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'palette-btn';
+                btn.textContent = i + 1;
+
+                // Determine state class
+                if (state.marked[i]) {
+                    btn.classList.add('marked');
+                } else if (state.userAnswers[i] !== null) {
+                    btn.classList.add('answered');
+                } else if (state.visited[i]) {
+                    // visited but no answer -> not-visited style? Actually we treat as not-visited (unanswered)
+                    btn.classList.add('not-visited');
+                } else {
+                    btn.classList.add('not-visited');
+                }
+
+                if (i === state.currentIndex) {
+                    btn.classList.add('current');
+                }
+
+                btn.addEventListener('click', () => {
+                    if (state.submitted) return;
+                    state.currentIndex = i;
+                    state.visited[i] = true;
+                    renderQuestion(i);
+                    updatePalette(); // to move current border
+                });
+                paletteGrid.appendChild(btn);
+            }
+        }
+
+        // Navigation
+        function goToPrev() {
+            if (state.currentIndex > 0) {
+                state.currentIndex--;
+                state.visited[state.currentIndex] = true;
+                renderQuestion(state.currentIndex);
+            }
+        }
+
+        function goToNext() {
+            if (state.currentIndex < 59) {
+                state.currentIndex++;
+                state.visited[state.currentIndex] = true;
+                renderQuestion(state.currentIndex);
+            }
+        }
+
+        function clearResponse() {
+            if (state.submitted) return;
+            state.userAnswers[state.currentIndex] = null;
+            renderQuestion(state.currentIndex);
+            updatePalette();
+        }
+
+        function toggleMark() {
+            if (state.submitted) return;
+            state.marked[state.currentIndex] = !state.marked[state.currentIndex];
+            renderQuestion(state.currentIndex);
+            updatePalette();
+        }
+
+        // Timer
+        function startTimer() {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                if (state.submitted) return;
+                state.timeLeft--;
+                const mins = Math.floor(state.timeLeft / 60);
+                const secs = state.timeLeft % 60;
+                timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                if (state.timeLeft <= 0) {
+                    clearInterval(state.timerInterval);
+                    autoSubmit();
+                }
+            }, 1000);
+        }
+
+        function autoSubmit() {
+            if (!state.submitted) {
+                state.submitted = true;
+                clearInterval(state.timerInterval);
+                showResult();
+            }
+        }
+
+        // Submit
+        function submitTest() {
+            if (state.submitted) return;
+            state.submitted = true;
+            clearInterval(state.timerInterval);
+            showResult();
+        }
+
+        // Compute results
+        function computeResults() {
+            let correctCount = 0, incorrectCount = 0, skippedCount = 0, score = 0;
+            for (let i = 0; i < 60; i++) {
+                const ans = state.userAnswers[i];
+                if (ans === null) {
+                    skippedCount++;
+                } else if (ans === questions[i].correct) {
+                    correctCount++;
+                    score += 4;
+                } else {
+                    incorrectCount++;
+                    score -= 1;
+                }
+            }
+            const totalAttempted = correctCount + incorrectCount;
+            const accuracy = totalAttempted === 0 ? 0 : Math.round((correctCount / totalAttempted) * 100);
+            return { correctCount, incorrectCount, skippedCount, score, accuracy };
+        }
+
+        // Build review HTML based on filter
+        function renderReview(filter) {
+            state.filteredView = filter || 'all';
+            const results = computeResults();
+            const reviewListEl = document.getElementById('reviewList');
+            reviewListEl.innerHTML = '';
+
+            // Filter questions
+            let indices = [];
+            for (let i = 0; i < 60; i++) {
+                const ans = state.userAnswers[i];
+                const isCorrect = ans !== null && ans === questions[i].correct;
+                const isIncorrect = ans !== null && ans !== questions[i].correct;
+                const isSkipped = ans === null;
+                if (filter === 'all' ||
+                    (filter === 'correct' && isCorrect) ||
+                    (filter === 'incorrect' && isIncorrect) ||
+                    (filter === 'skipped' && isSkipped)) {
+                    indices.push(i);
+                }
+            }
+
+            if (indices.length === 0) {
+                reviewListEl.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">No questions match this filter.</div>';
+                return;
+            }
+
+            indices.forEach(i => {
+                const q = questions[i];
+                const userAns = state.userAnswers[i];
+                const correctAns = q.correct;
+                let itemClass = 'skipped';
+                if (userAns !== null) {
+                    itemClass = (userAns === correctAns) ? 'correct' : 'incorrect';
+                }
+                const div = document.createElement('div');
+                div.className = `review-item ${itemClass}`;
+                const userAnsText = userAns !== null ? q.options[userAns] : 'Not attempted';
+                const correctAnsText = q.options[correctAns];
+                div.innerHTML = `
+                    <div class="review-q">Q${i + 1}. ${q.text}</div>
+                    <div class="review-detail"><strong>Your answer:</strong> ${userAnsText}</div>
+                    <div class="review-detail"><strong>Correct answer:</strong> ${correctAnsText}</div>
+                `;
+                reviewListEl.appendChild(div);
+            });
+        }
+
+        function showResult() {
+            // Compute
+            const res = computeResults();
+            // Update score summary
+            scoreSummary.innerHTML = `
+                <div class="score-item"><div class="score-value">${res.score}</div><div class="score-label">Score</div></div>
+                <div class="score-item"><div class="score-value">${res.accuracy}%</div><div class="score-label">Accuracy</div></div>
+                <div class="score-item"><div class="score-value">${res.correctCount}</div><div class="score-label">Correct</div></div>
+                <div class="score-item"><div class="score-value">${res.incorrectCount}</div><div class="score-label">Incorrect</div></div>
+                <div class="score-item"><div class="score-value">${res.skippedCount}</div><div class="score-label">Skipped</div></div>
+            `;
+
+            // Set default filter to all
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+            renderReview('all');
+            overlay.classList.add('show');
+        }
+
+        // Download review
+        function downloadReview() {
+            const res = computeResults();
+            let htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset="UTF-8"><title>Performance & Solutions</title>
+                <style>
+                    body { font-family: system-ui, sans-serif; padding: 30px; background: #f8fafc; }
+                    h1 { color: #1e293b; }
+                    .summary { display: flex; gap: 30px; margin: 20px 0; background: white; padding: 20px; border-radius: 16px; }
+                    .summary div { text-align: center; }
+                    .review-item { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; border-left: 6px solid; }
+                    .correct { border-left-color: #10b981; }
+                    .incorrect { border-left-color: #ef4444; }
+                    .skipped { border-left-color: #94a3b8; }
+                </style>
+                </head>
+                <body>
+                <h1>📊 Performance & Solutions</h1>
+                <div class="summary">
+                    <div><strong>Score</strong><br>${res.score}</div>
+                    <div><strong>Accuracy</strong><br>${res.accuracy}%</div>
+                    <div><strong>Correct</strong><br>${res.correctCount}</div>
+                    <div><strong>Incorrect</strong><br>${res.incorrectCount}</div>
+                    <div><strong>Skipped</strong><br>${res.skippedCount}</div>
+                </div>
+                <div id="reviewContainer">
+            `;
+
+            for (let i = 0; i < 60; i++) {
+                const q = questions[i];
+                const userAns = state.userAnswers[i];
+                const correctAns = q.correct;
+                let itemClass = 'skipped';
+                if (userAns !== null) {
+                    itemClass = (userAns === correctAns) ? 'correct' : 'incorrect';
+                }
+                const userAnsText = userAns !== null ? q.options[userAns] : 'Not attempted';
+                const correctAnsText = q.options[correctAns];
+                htmlContent += `
+                    <div class="review-item ${itemClass}">
+                        <strong>Q${i + 1}.</strong> ${q.text}<br>
+                        <span style="color: #475569;">Your answer: ${userAnsText}</span><br>
+                        <span style="color: #0f172a; font-weight: 500;">Correct answer: ${correctAnsText}</span>
+                    </div>
+                `;
+            }
+            htmlContent += `</div></body></html>`;
+
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'performance_review.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ---------------------- EVENT LISTENERS ----------------------
+        prevBtn.addEventListener('click', goToPrev);
+        nextBtn.addEventListener('click', goToNext);
+        clearBtn.addEventListener('click', clearResponse);
+        markBtn.addEventListener('click', toggleMark);
+        submitBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to submit the test?')) {
+                submitTest();
+            }
+        });
+
+        closeOverlayBtn.addEventListener('click', () => {
+            overlay.classList.remove('show');
+            // we do NOT reset test, user can review via submit again? But submitted = true, so they can only view.
+            // For safety, we disable interactions? Already submitted, so buttons do nothing.
+        });
+
+        downloadBtn.addEventListener('click', downloadReview);
+
+        // Filter buttons
+        filterBar.addEventListener('click', (e) => {
+            const btn = e.target.closest('.filter-btn');
+            if (!btn) return;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            renderReview(filter);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (state.submitted) return;
+            if (e.key === 'ArrowLeft') { e.preventDefault(); goToPrev(); }
+            if (e.key === 'ArrowRight') { e.preventDefault(); goToNext(); }
+        });
+
+        // Initialize
+        function init() {
+            // Shuffle options for each question (but keep correct index accurate)
+            // NOTE: The user requested "suffle option each time . 30 combinations" - likely means shuffle options per question.
+            // We'll shuffle each question's options and update correct index accordingly.
+            // This satisfies "30 combinations" idea (random order per question).
+            questions.forEach(q => {
+                const correctText = q.options[q.correct];
+                // Fisher-Yates shuffle
+                const arr = [...q.options];
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                q.options = arr;
+                q.correct = arr.indexOf(correctText);
+            });
+
+            renderQuestion(0);
+            updatePalette();
+            startTimer();
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
